@@ -9,6 +9,9 @@ let moves = {
 };
 
 $(document).ready(function () {
+  $(".btn-reset").click(function () {
+    reset();
+  });
   $("[data-value]").click(function ({
     target: {
       dataset: { value },
@@ -51,10 +54,26 @@ function findWinner(player) {
 
   let [isWinner] = result.filter(Boolean);
 
-  console.log(isWinner);
   if (isWinner) {
     setTimeout(() => {
-      alert(player === 0 ? "Player A is the winner" : "Player B is the winner");
+      let toast = $(".success-toast");
+      toast.html($("<span></span>").text(`Winner is Player ${player}`));
+      toast.show();
+      $(".btn-reset").show();
+      let myCanvas = document.createElement("canvas");
+      document.body.appendChild(myCanvas);
+      let myConfetti = confetti.create(myCanvas, {
+        resize: true,
+        useWorker: true,
+      });
+      myConfetti({
+        particleCount: 100,
+        spread: 160,
+      });
+      confetti();
+      setTimeout(() => {
+        confetti().reset();
+      }, 1000);
     }, 500);
   } else {
     if ([...moves.x, ...moves.y].length === 9) {
@@ -69,6 +88,8 @@ function findWinner(player) {
 
 function reset() {
   $("[data-value]").empty();
+  $(".btn-reset").hide();
+  $(".success-toast").hide();
   turn = 0;
   moves = {
     x: [],
